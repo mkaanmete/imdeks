@@ -103,6 +103,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
 /* ---- query targeted ads filter stable v49 ---- */
+
+
+/* ---- query targeted ads filter stable v50 ---- */
 document.addEventListener("DOMContentLoaded", function(){
     function normalizeImdeksAdText(text){
         return (text || "")
@@ -126,13 +129,18 @@ document.addEventListener("DOMContentLoaded", function(){
     var q = normalizeImdeksAdText(query);
 
     var adUnits = document.querySelectorAll(".imdeks-ad-unit");
+    if(!adUnits.length) return;
 
     adUnits.forEach(function(unit){
         var items = unit.querySelectorAll(".ad-item");
 
-        // Panelde .ad-item kullanılmamışsa reklama dokunma; eski reklamlar görünmeye devam etsin.
+        // Eski/klasik reklam HTML'i .ad-item kullanmıyorsa asla gizleme.
         if(!items.length){
-            unit.style.display = "";
+            if(unit.innerHTML.trim()){
+                unit.style.display = "";
+                unit.style.visibility = "visible";
+                unit.style.opacity = "1";
+            }
             return;
         }
 
@@ -169,19 +177,25 @@ document.addEventListener("DOMContentLoaded", function(){
             }
         });
 
-        // Bu reklam alanında eşleşme yoksa sadece aynı alandaki default reklamları göster.
         if(matchedCount === 0){
             defaultItems.forEach(function(item){
                 item.style.display = "";
             });
         }
 
-        // Alan tamamen boş kaldıysa wrapper'ı gizle; değilse göster.
         var visibleItem = Array.prototype.some.call(items, function(item){
             return item.style.display !== "none";
         });
 
-        unit.style.display = visibleItem ? "" : "none";
+        // Desktop reklamların yanlış gizlenmemesi için wrapper'ı zorla görünür bırak.
+        // İçeride hedefli/default item yoksa yalnızca o zaman gizle.
+        if(visibleItem){
+            unit.style.display = "";
+            unit.style.visibility = "visible";
+            unit.style.opacity = "1";
+        }else{
+            unit.style.display = "none";
+        }
     });
 });
 

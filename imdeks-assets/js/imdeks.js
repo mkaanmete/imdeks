@@ -9,73 +9,7 @@
 
 
 /* ---- extracted inline script ---- */
-document.addEventListener("DOMContentLoaded", function(){
 
-    function normalizeImdeksAdText(text){
-        return (text || "")
-            .toString()
-            .toLowerCase()
-            .replace(/ç/g,'c')
-            .replace(/ğ/g,'g')
-            .replace(/ı/g,'i')
-            .replace(/ö/g,'o')
-            .replace(/ş/g,'s')
-            .replace(/ü/g,'u')
-            .replace(/â/g,'a')
-            .replace(/î/g,'i')
-            .replace(/û/g,'u')
-            .replace(/[^a-z0-9\s,]/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-
-    const query = new URLSearchParams(window.location.search).get("q") || "";
-    const q = normalizeImdeksAdText(query);
-
-    const ads = document.querySelectorAll(".ad-item");
-    if (!ads.length) return;
-
-    let matchedCount = 0;
-
-    ads.forEach(function(ad){
-        const tagsRaw = ad.getAttribute("data-tags") || "";
-        const isDefault = ad.getAttribute("data-default") === "1";
-
-        // önce hepsini gizle, sonra uygun olanları aç
-        ad.style.display = "none";
-
-        // default reklamlar yalnızca eşleşme yoksa gösterilecek
-        if (isDefault) return;
-
-        if (!tagsRaw) return;
-
-        const tags = tagsRaw.split(",")
-            .map(function(tag){ return normalizeImdeksAdText(tag); })
-            .filter(Boolean);
-
-        const matched = tags.some(function(tag){
-            if (q.includes(tag)) return true;
-
-            // Çok kelimeli tag: "esenler dis" => sorguda hem esenler hem dis geçerse eşleşir
-            const words = tag.split(" ").filter(function(word){ return word.length > 1; });
-            return words.length > 1 && words.every(function(word){ return q.includes(word); });
-        });
-
-        if (matched) {
-            ad.style.display = "block";
-            matchedCount++;
-        }
-    });
-
-    // Hiç hedefli reklam eşleşmezse data-default="1" reklamları göster
-    if (matchedCount === 0) {
-        ads.forEach(function(ad){
-            if (ad.getAttribute("data-default") === "1") {
-                ad.style.display = "block";
-            }
-        });
-    }
-});
 
 
 /* ---- extracted inline script ---- */
@@ -167,4 +101,67 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 });
 
+
+/* ---- query targeted ads filter stable v47 ---- */
+document.addEventListener("DOMContentLoaded", function(){
+    function normalizeImdeksAdText(text){
+        return (text || "")
+            .toString()
+            .toLowerCase()
+            .replace(/ç/g,'c')
+            .replace(/ğ/g,'g')
+            .replace(/ı/g,'i')
+            .replace(/ö/g,'o')
+            .replace(/ş/g,'s')
+            .replace(/ü/g,'u')
+            .replace(/â/g,'a')
+            .replace(/î/g,'i')
+            .replace(/û/g,'u')
+            .replace(/[^a-z0-9\s,]/g,' ')
+            .replace(/\s+/g,' ')
+            .trim();
+    }
+
+    var query = new URLSearchParams(window.location.search).get("q") || "";
+    var q = normalizeImdeksAdText(query);
+    var ads = document.querySelectorAll(".ad-item");
+
+    if(!ads.length) return;
+
+    var matchedCount = 0;
+
+    ads.forEach(function(ad){
+        var tagsRaw = ad.getAttribute("data-tags") || "";
+        var isDefault = ad.getAttribute("data-default") === "1";
+
+        ad.style.display = "none";
+
+        if(isDefault) return;
+        if(!tagsRaw) return;
+
+        var tags = tagsRaw.split(",")
+            .map(function(tag){ return normalizeImdeksAdText(tag); })
+            .filter(Boolean);
+
+        var matched = tags.some(function(tag){
+            if(q.indexOf(tag) !== -1) return true;
+
+            var words = tag.split(" ").filter(function(word){ return word.length > 1; });
+            return words.length > 1 && words.every(function(word){ return q.indexOf(word) !== -1; });
+        });
+
+        if(matched){
+            ad.style.display = "block";
+            matchedCount++;
+        }
+    });
+
+    if(matchedCount === 0){
+        ads.forEach(function(ad){
+            if(ad.getAttribute("data-default") === "1"){
+                ad.style.display = "block";
+            }
+        });
+    }
+});
 

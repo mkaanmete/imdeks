@@ -135,3 +135,42 @@
         display:none !important;
     }
 }
+
+
+/* ---- Ads desktop/mobile safety v50 ---- */
+.imdeks-ad-unit {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-bottom: 16px;
+}
+
+.imdeks-ad-unit:not(:empty) {
+    display: block !important;
+}
+
+.imdeks-ad-unit .ad-item {
+    margin-bottom: 15px;
+}
+
+.imdeks-ad-top {
+    margin-bottom: 18px;
+}
+
+.imdeks-ad-bottom {
+    margin-top: 22px;
+}
+
+@media (min-width: 769px) {
+    .imdeks-ad-sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .imdeks-ad-sidebar {
+        display: none !important;
+    }
+}

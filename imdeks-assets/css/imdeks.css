@@ -1,0 +1,77 @@
+/*!
+ * Imdeks CDN CSS v43
+ * Static UI styles only. Dynamic admin color variables remain in search.php.
+ */
+
+:root{
+    --imdeks-default-link-color:#1a0dab;
+    --imdeks-default-domain-color:#006621;
+    --imdeks-default-text-color:#4d5156;
+}
+
+/* Preserve admin-defined SERP colors via CSS variables */
+.imdeks-result-item,
+.imdeks-result-item p,
+.web-result,
+.web-result p,
+.serper-result,
+.serper-result p{
+    color:var(--serp-text-color,var(--imdeks-default-text-color)) !important;
+}
+
+.web-result-title,
+.imdeks-result-item h5 a,
+.imdeks-result-item a.web-result-title,
+.serper-result h5 a{
+    color:var(--serp-link-color,var(--imdeks-default-link-color)) !important;
+}
+
+.imdeks-result-item > a,
+.web-result > a,
+.serper-result > a,
+.result-url,
+.result-domain{
+    color:var(--serp-domain-color,var(--imdeks-default-domain-color)) !important;
+}
+
+.imdeks-result-item a:hover,
+.serper-result a:hover{
+    text-decoration:underline;
+}
+
+/* Ads */
+.ad-item{
+    margin-bottom:15px;
+}
+
+/* Places / business buttons */
+.call-btn,
+.map-btn,
+.whatsapp-btn,
+.appointment-btn,
+.profile-btn{
+    display:inline-block;
+    margin-top:6px;
+    margin-right:5px;
+    padding:6px 12px;
+    border-radius:8px;
+    font-size:13px;
+    line-height:1.2;
+    text-decoration:none !important;
+    white-space:nowrap;
+}
+
+.call-btn{background:#18a058;color:#fff !important}
+.map-btn{background:#1a73e8;color:#fff !important}
+.whatsapp-btn{background:#25D366;color:#fff !important}
+.appointment-btn{background:#111827;color:#fff !important}
+.profile-btn{background:#f3f4f6;color:#111827 !important;border:1px solid #e5e7eb}
+
+/* Mobile sidebar ad handling */
+@media(max-width:768px){
+    .imdeks-ad-sidebar{
+        display:none !important;
+    }
+}
+
+/* Extracted static styles from search.php */

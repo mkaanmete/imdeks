@@ -75,3 +75,34 @@
 }
 
 /* Extracted static styles from search.php */
+
+
+/* ---- SERP color safety v47 ---- */
+.imdeks-result-item,
+.imdeks-result-item p,
+.web-result,
+.web-result p,
+.serper-result,
+.serper-result p {
+    color: var(--serp-text-color, #4d5156) !important;
+}
+
+.web-result-title,
+.imdeks-result-item h5 a,
+.imdeks-result-item a.web-result-title,
+.serper-result h5 a {
+    color: var(--serp-link-color, #1a0dab) !important;
+}
+
+.imdeks-result-item > a,
+.web-result > a,
+.serper-result > a,
+.result-url,
+.result-domain {
+    color: var(--serp-domain-color, #006621) !important;
+}
+
+.imdeks-result-item a:hover,
+.serper-result a:hover {
+    text-decoration: underline;
+}

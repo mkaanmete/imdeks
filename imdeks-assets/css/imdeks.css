@@ -245,3 +245,10 @@
     font-size: 12px;
     color: #888;
 }
+.imdeks-ai-answer-box {
+    border-radius: 16px;
+    padding: 18px;
+    background: linear-gradient(135deg, #ffffff, #f7faff);
+    border: 1px solid #e6ecff;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+}

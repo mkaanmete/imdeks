@@ -186,3 +186,6 @@
         .imdeks-main-results > .imdeks-sponsored-slot { display:block !important; }
         .imdeks-sidebar > .imdeks-sponsored-slot { display:block !important; }
     }
+   .svg-icon {
+       fill: #2630bd !important;
+   }

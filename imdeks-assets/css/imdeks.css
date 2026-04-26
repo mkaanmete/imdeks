@@ -1,5 +1,5 @@
 /*!
- * Imdeks CDN CSS v43
+ * Imdeks CDN CSS v59
  * Static UI styles only. Dynamic admin color variables remain in search.php.
  */
 
@@ -261,3 +261,12 @@
     }
 }
 
+
+
+/* ---- v59 desktop ad fallback: JS gecikse bile en az bir reklam görünür ---- */
+.imdeks-ad-unit { display:block !important; visibility:visible !important; opacity:1 !important; }
+.imdeks-ad-unit .ad-item { display:none; }
+.imdeks-ad-unit .ad-item:first-of-type,
+.imdeks-ad-unit .ad-item.imdeks-force-visible,
+.imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible { display:block !important; visibility:visible !important; opacity:1 !important; }
+@media (min-width: 992px) { .imdeks-ad-sidebar, .imdeks-ad-top, .imdeks-ad-bottom { display:block !important; visibility:visible !important; opacity:1 !important; } }

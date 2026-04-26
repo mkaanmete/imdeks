@@ -189,3 +189,59 @@
    .svg-icon {
        fill: #2630bd !important;
    }
+.imdeks-ai-answer-box {
+    border-radius: 16px;
+    padding: 18px;
+    background: linear-gradient(135deg, #ffffff, #f7faff);
+    border: 1px solid #e6ecff;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+}
+
+.imdeks-ai-answer-box:hover {
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+.imdeks-ai-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.imdeks-ai-icon {
+    font-size: 18px;
+}
+
+.imdeks-ai-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a6cff;
+    background: #eef2ff;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.imdeks-ai-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #222;
+}
+
+.imdeks-ai-sources {
+    margin-top: 12px;
+}
+
+.imdeks-ai-sources a {
+    display: inline-block;
+    font-size: 12px;
+    margin-right: 8px;
+    color: #666;
+    text-decoration: underline;
+}
+
+.imdeks-ai-disclaimer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #888;
+}

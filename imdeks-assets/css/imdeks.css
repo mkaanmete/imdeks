@@ -270,3 +270,53 @@
 .imdeks-ad-unit .ad-item.imdeks-force-visible,
 .imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible { display:block !important; visibility:visible !important; opacity:1 !important; }
 @media (min-width: 992px) { .imdeks-ad-sidebar, .imdeks-ad-top, .imdeks-ad-bottom { display:block !important; visibility:visible !important; opacity:1 !important; } }
+
+/* ---- v60 ads only final override ---- */
+.imdeks-ad-unit,
+.imdeks-ad-top,
+.imdeks-ad-bottom,
+.imdeks-ad-sidebar{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow:visible !important;
+}
+.imdeks-ad-unit .ad-item{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+}
+.imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible,
+.imdeks-ad-unit.imdeks-ad-v60 .ad-item.is-visible,
+.imdeks-ad-unit .ad-item.imdeks-force-visible{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    height:auto !important;
+    max-height:none !important;
+}
+.imdeks-ad-unit:not(.imdeks-ad-processed) .ad-item[data-default="1"]{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+}
+@media (min-width: 992px){
+    .imdeks-ad-sidebar,
+    .imdeks-ad-top,
+    .imdeks-ad-bottom{
+        display:block !important;
+        visibility:visible !important;
+        opacity:1 !important;
+    }
+}
+@media (max-width: 991px){
+    .imdeks-ad-top,
+    .imdeks-ad-bottom{
+        display:block !important;
+        visibility:visible !important;
+        opacity:1 !important;
+    }
+    .imdeks-ad-sidebar{ display:none !important; }
+}

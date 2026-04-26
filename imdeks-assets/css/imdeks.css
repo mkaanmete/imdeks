@@ -1,5 +1,5 @@
 /*!
- * Imdeks CDN CSS v43
+ * Imdeks CDN CSS v56
  * Static UI styles only. Dynamic admin color variables remain in search.php.
  */
 
@@ -261,3 +261,16 @@
     }
 }
 
+
+/* ---- v56 desktop ads fallback visibility ---- */
+.imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible {
+    display: block !important;
+}
+
+@media (min-width: 992px) {
+    .imdeks-ad-unit .ad-item.is-visible {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}

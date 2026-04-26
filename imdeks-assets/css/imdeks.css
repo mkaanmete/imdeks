@@ -1,5 +1,5 @@
 /*!
- * Imdeks CDN CSS v59
+ * Imdeks CDN CSS v43
  * Static UI styles only. Dynamic admin color variables remain in search.php.
  */
 
@@ -262,61 +262,102 @@
 }
 
 
-
-/* ---- v59 desktop ad fallback: JS gecikse bile en az bir reklam görünür ---- */
-.imdeks-ad-unit { display:block !important; visibility:visible !important; opacity:1 !important; }
-.imdeks-ad-unit .ad-item { display:none; }
-.imdeks-ad-unit .ad-item:first-of-type,
-.imdeks-ad-unit .ad-item.imdeks-force-visible,
-.imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible { display:block !important; visibility:visible !important; opacity:1 !important; }
-@media (min-width: 992px) { .imdeks-ad-sidebar, .imdeks-ad-top, .imdeks-ad-bottom { display:block !important; visibility:visible !important; opacity:1 !important; } }
-
-/* ---- v60 ads only final override ---- */
-.imdeks-ad-unit,
-.imdeks-ad-top,
-.imdeks-ad-bottom,
-.imdeks-ad-sidebar{
-    display:block !important;
-    visibility:visible !important;
-    opacity:1 !important;
-    height:auto !important;
-    max-height:none !important;
-    overflow:visible !important;
+/* ---- v61 sadece reklam düzeltmesi: Places tarafına dokunmaz ---- */
+.imdeks-ad-unit {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-bottom: 16px;
 }
-.imdeks-ad-unit .ad-item{
-    display:none !important;
-    visibility:hidden !important;
-    opacity:0 !important;
+
+.imdeks-ad-unit .ad-item {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
 }
+
 .imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible,
-.imdeks-ad-unit.imdeks-ad-v60 .ad-item.is-visible,
-.imdeks-ad-unit .ad-item.imdeks-force-visible{
-    display:block !important;
-    visibility:visible !important;
-    opacity:1 !important;
-    height:auto !important;
-    max-height:none !important;
+.imdeks-ad-unit .ad-item.is-visible {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
 }
-.imdeks-ad-unit:not(.imdeks-ad-processed) .ad-item[data-default="1"]{
-    display:block !important;
-    visibility:visible !important;
-    opacity:1 !important;
+
+.imdeks-ad-unit.imdeks-ad-processed:has(.ad-item.is-visible) {
+    display: block !important;
 }
-@media (min-width: 992px){
-    .imdeks-ad-sidebar,
+
+@media (min-width: 992px) {
     .imdeks-ad-top,
-    .imdeks-ad-bottom{
-        display:block !important;
-        visibility:visible !important;
-        opacity:1 !important;
+    .imdeks-ad-bottom,
+    .imdeks-ad-sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
     }
 }
-@media (max-width: 991px){
+
+@media (max-width: 991px) {
     .imdeks-ad-top,
-    .imdeks-ad-bottom{
-        display:block !important;
-        visibility:visible !important;
-        opacity:1 !important;
+    .imdeks-ad-bottom {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
-    .imdeks-ad-sidebar{ display:none !important; }
+
+    .imdeks-ad-sidebar {
+        display: none !important;
+    }
+}
+
+/* ---- v62 reklam görünürlük kuralı ----
+   data-default="1" her sorguda görünür.
+   data-tags reklamları JS eşleşme bulunca görünür. */
+.imdeks-ad-unit,
+.ad-unit,
+[data-imdeks-ad-unit] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.imdeks-ad-unit .ad-item,
+.ad-unit .ad-item,
+[data-imdeks-ad-unit] .ad-item {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* JS yüklenmeden önce bile varsayılan reklam görünsün */
+.imdeks-ad-unit .ad-item[data-default="1"],
+.ad-unit .ad-item[data-default="1"],
+[data-imdeks-ad-unit] .ad-item[data-default="1"],
+.imdeks-ad-unit .ad-item.is-visible,
+.ad-unit .ad-item.is-visible,
+[data-imdeks-ad-unit] .ad-item.is-visible,
+.imdeks-ad-unit .ad-item[data-imdeks-visible="1"],
+.ad-unit .ad-item[data-imdeks-visible="1"],
+[data-imdeks-ad-unit] .ad-item[data-imdeks-visible="1"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
 }

@@ -105,7 +105,7 @@
                 return item.classList.contains("is-visible");
             });
 
-            if(visibleItem){
+            if(visibleItem || unit.innerHTML.trim()){
                 unit.style.display = "";
                 unit.style.visibility = "visible";
                 unit.style.opacity = "1";
@@ -138,4 +138,24 @@
         observer.observe(document.documentElement, {childList:true, subtree:true});
     }
 })();
+
+
+/* ---- v55 desktop ads visibility safety pass ---- */
+document.addEventListener("DOMContentLoaded", function(){
+    function forceDesktopAdVisibility(){
+        if(window.matchMedia && window.matchMedia("(min-width: 992px)").matches){
+            document.querySelectorAll(".imdeks-ad-unit").forEach(function(unit){
+                if(unit.innerHTML.trim()){
+                    unit.style.display = "";
+                    unit.style.visibility = "visible";
+                    unit.style.opacity = "1";
+                }
+            });
+        }
+    }
+    forceDesktopAdVisibility();
+    window.addEventListener("load", forceDesktopAdVisibility);
+    setTimeout(forceDesktopAdVisibility, 300);
+    setTimeout(forceDesktopAdVisibility, 1200);
+});
 

@@ -229,3 +229,35 @@
     }
 }
 
+
+/* ---- v55 desktop ad hard visibility + cache-off deploy ---- */
+@media (min-width: 992px) {
+    .imdeks-ad-unit,
+    .imdeks-ad-top,
+    .imdeks-ad-bottom,
+    .imdeks-ad-sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        min-height: 1px;
+    }
+
+    .imdeks-ad-unit:not(:empty) {
+        display: block !important;
+    }
+}
+
+/* Mobilde sidebar reklam gizli kalır; top/bottom reklamlar çalışmaya devam eder */
+@media (max-width: 991px) {
+    .imdeks-ad-top,
+    .imdeks-ad-bottom {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .imdeks-ad-sidebar {
+        display: none !important;
+    }
+}
+

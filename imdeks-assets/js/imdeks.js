@@ -1,10 +1,10 @@
 /*!
- * Imdeks CDN JS v56
+ * Imdeks CDN JS v43
  * Static frontend interactions only.
  */
 (function(){
-    if(window.__IMDEKS_CDN_V56_LOADED__) return;
-    window.__IMDEKS_CDN_V56_LOADED__ = true;
+    if(window.__IMDEKS_CDN_V43_LOADED__) return;
+    window.__IMDEKS_CDN_V43_LOADED__ = true;
 })();
 
 
@@ -54,12 +54,6 @@
                     unit.style.display = "";
                     unit.style.visibility = "visible";
                     unit.style.opacity = "1";
-                    var visible = unit.querySelector(".ad-item.is-visible");
-                    var first = unit.querySelector(".ad-item");
-                    if(!visible && first){
-                        first.classList.add("is-visible");
-                        first.style.display = "";
-                    }
                 }
                 return;
             }
@@ -101,19 +95,10 @@
             });
 
             if(matchedCount === 0){
-                if(defaultItems.length){
-                    defaultItems.forEach(function(item){
-                        item.classList.add("is-visible");
-                        item.style.display = "";
-                    });
-                }else{
-                    // v56: Default reklam tanımlı değilse masaüstü tamamen boş kalmasın.
-                    var fallbackLimit = (window.matchMedia && window.matchMedia("(min-width: 992px)").matches) ? 2 : 1;
-                    Array.prototype.slice.call(items, 0, fallbackLimit).forEach(function(item){
-                        item.classList.add("is-visible");
-                        item.style.display = "";
-                    });
-                }
+                defaultItems.forEach(function(item){
+                    item.classList.add("is-visible");
+                    item.style.display = "";
+                });
             }
 
             var visibleItem = Array.prototype.some.call(items, function(item){
@@ -164,12 +149,6 @@ document.addEventListener("DOMContentLoaded", function(){
                     unit.style.display = "";
                     unit.style.visibility = "visible";
                     unit.style.opacity = "1";
-                    var visible = unit.querySelector(".ad-item.is-visible");
-                    var first = unit.querySelector(".ad-item");
-                    if(!visible && first){
-                        first.classList.add("is-visible");
-                        first.style.display = "";
-                    }
                 }
             });
         }

@@ -189,28 +189,3 @@
    .svg-icon {
        fill: #2630bd !important;
    }
-
-   .imdeks-live-widgets {width:100%;max-width:520px;margin:34px auto 20px;display:flex;flex-direction:column;gap:16px;padding:0 10px;}
-   .imdeks-info-card {position:relative;overflow:hidden;border-radius:22px;padding:18px;color:#fff;background:rgba(18,24,38,.72);border:1px solid rgba(255,255,255,.18);box-shadow:0 16px 40px rgba(0,0,0,.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
-   .imdeks-info-card:before {content:"";position:absolute;inset:-70px auto auto -70px;width:170px;height:170px;border-radius:999px;background:rgba(58,201,117,.32);filter:blur(6px);}
-   .imdeks-currency-card:before {background:rgba(84,160,255,.32);}
-   .imdeks-card-head,.imdeks-weather-main,.imdeks-weather-grid,.imdeks-currency-list,.imdeks-widget-note {position:relative;z-index:1;}
-   .imdeks-card-head {display:flex;align-items:center;gap:12px;margin-bottom:16px;}
-   .imdeks-card-icon {width:42px;height:42px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.14);font-size:22px;}
-   .imdeks-card-title {font-size:15px;font-weight:700;letter-spacing:.2px;}
-   .imdeks-card-subtitle {font-size:12px;opacity:.78;margin-top:2px;}
-   .imdeks-weather-main {display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px;}
-   .imdeks-weather-temp {font-size:44px;line-height:1;font-weight:800;}
-   .imdeks-weather-desc {font-size:14px;opacity:.9;text-align:right;}
-   .imdeks-weather-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-   .imdeks-weather-grid div,.imdeks-currency-row {background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;}
-   .imdeks-weather-grid span,.imdeks-currency-row span {display:block;font-size:11px;opacity:.72;}
-   .imdeks-weather-grid strong {display:block;font-size:13px;margin-top:3px;}
-   .imdeks-currency-list {display:grid;gap:8px;}
-   .imdeks-currency-row {display:flex;align-items:center;justify-content:space-between;}
-   .imdeks-currency-row span {font-size:13px;opacity:.85;}
-   .imdeks-currency-row strong {font-size:18px;font-weight:800;}
-   .imdeks-widget-note {font-size:11px;opacity:.6;margin-top:10px;}
-   body:not(.has-background) .imdeks-info-card {color:#162033;background:rgba(255,255,255,.88);border-color:rgba(0,0,0,.08);box-shadow:0 16px 40px rgba(28,40,65,.12);}
-   body:not(.has-background) .imdeks-card-icon,body:not(.has-background) .imdeks-weather-grid div,body:not(.has-background) .imdeks-currency-row {background:rgba(23,39,65,.055);border-color:rgba(23,39,65,.08);}
-   @media (max-width:768px){.imdeks-live-widgets{padding-left:15px;padding-right:15px;margin-top:28px;}.imdeks-weather-temp{font-size:38px;}}

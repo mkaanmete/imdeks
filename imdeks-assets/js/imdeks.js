@@ -135,13 +135,14 @@ document.addEventListener("DOMContentLoaded", function(){
         var items = unit.querySelectorAll(".ad-item");
 
         // Eski/klasik reklam HTML'i .ad-item kullanmıyorsa asla gizleme.
-// Eğer .ad-item yoksa bu alan klasik reklamdır → ASLA GİZLEME
-if(!items.length){
-    unit.style.display = "block";
-    unit.style.visibility = "visible";
-    unit.style.opacity = "1";
-    return;
-}
+        if(!items.length){
+            if(unit.innerHTML.trim()){
+                unit.style.display = "";
+                unit.style.visibility = "visible";
+                unit.style.opacity = "1";
+            }
+            return;
+        }
 
         var matchedCount = 0;
         var defaultItems = [];

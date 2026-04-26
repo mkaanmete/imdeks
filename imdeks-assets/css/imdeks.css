@@ -175,5 +175,57 @@
     }
 }
 
+/* ---- v52 safe ultra fast: işletme kartlarında görsel yüklenmez ---- */
+.imdeks-place-card .imdeks-place-thumb {
+    display: none !important;
+}
 
-.imdeks-place-thumb{display:none!important;}
+
+/* ---- v54 desktop places + ads no-flash fix ---- */
+
+/* Reklamlarda ilk yüklemede tüm hedefli reklamların görünmesini engeller */
+.imdeks-ad-unit .ad-item {
+    display: none;
+}
+
+.imdeks-ad-unit.imdeks-ad-processed .ad-item.is-visible {
+    display: block;
+}
+
+/* Klasik reklam HTML'i .ad-item içermiyorsa görünür kalır */
+.imdeks-ad-unit:not(:empty) {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Masaüstünde işletme profilleri kesin görünür */
+@media (min-width: 992px) {
+    .imdeks-sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .imdeks-places-desktop {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .imdeks-places-mobile {
+        display: none !important;
+    }
+}
+
+/* Mobilde yalnızca kaydırmalı işletme kartları görünsün, sidebar kopyası gizli kalsın */
+@media (max-width: 991px) {
+    .imdeks-places-desktop {
+        display: none !important;
+    }
+
+    .imdeks-places-mobile {
+        display: block !important;
+    }
+}
+

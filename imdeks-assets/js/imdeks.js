@@ -17,7 +17,50 @@
     // Aynı sorguda aşağı indikçe otomatik yeni sonuç yükleme.
     var loadBtn = document.getElementById('imdeksLoadMore'), results = document.getElementById('imdeksResults'), pagination = document.getElementById('imdeksPagination');
     var loading = false, autoLoads = 0;
-    function appendFromUrl(url){ if(!url || loading || !results) return; loading=true; if(loadBtn){ loadBtn.disabled=true; loadBtn.textContent='Yükleniyor...'; } fetch(url, {headers:{'X-Requested-With':'fetch'}}).then(function(r){ return r.text(); }).then(function(html){ var doc=new DOMParser().parseFromString(html,'text/html'); var incoming=doc.querySelectorAll('#imdeksResults .imdeks-result-item'); incoming.forEach(function(item){ var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results; container.appendChild(document.importNode(item, true)); }); var nextBtn=doc.querySelector('#imdeksLoadMore'); var nextUrl=nextBtn ? nextBtn.getAttribute('data-next-url') : ''; if(loadBtn) loadBtn.setAttribute('data-next-url', nextUrl || ''); var nextPagination=doc.querySelector('#imdeksPagination'); if(nextPagination && pagination) pagination.innerHTML=nextPagination.innerHTML; if(!incoming.length && loadBtn){ loadBtn.style.display='none'; } }).catch(function(){ if(loadBtn) loadBtn.textContent='Tekrar dene'; }).finally(function(){ loading=false; if(loadBtn){ loadBtn.disabled=false; loadBtn.textContent='Daha fazla sonuç yükle'; } }); }
+    function appendFromUrl(url){ if(!url || loading || !results) return; loading=true; if(loadBtn){ loadBtn.disabled=true; loadBtn.textContent='Yükleniyor...'; } function fetchWithTimeout(url, timeout = 6000) {
+    return Promise.race([
+        fetch(url, {headers:{'X-Requested-With':'fetch'}}),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("timeout")), timeout)
+        )
+    ]);
+}
+
+fetchWithTimeout(url, 6000)
+    .then(function(r){ return r.text(); })
+    .then(function(html){
+
+        if (!html || html.length < 50) {
+            throw new Error("empty response");
+        }
+
+        var doc = new DOMParser().parseFromString(html,'text/html');
+
+        var incoming = doc.querySelectorAll('#imdeksResults .imdeks-result-item');
+
+        if (!incoming.length) {
+            throw new Error("no results");
+        }
+
+        incoming.forEach(function(item){
+            var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results;
+            container.appendChild(document.importNode(item, true));
+        });
+
+    })
+    .catch(function(err){
+        console.error(err);
+
+        if(loadBtn){
+            loadBtn.textContent = "Sunucu yavaş yanıt veriyor";
+        }
+
+        // loader kilitlenmesin
+        var asyncBox = document.getElementById('imdeksAsyncContent');
+        if (asyncBox) {
+            asyncBox.innerHTML = "<div style='padding:20px'>Sonuçlar yüklenemedi. Lütfen tekrar deneyin.</div>";
+        }
+    }).then(function(r){ return r.text(); }).then(function(html){ var doc=new DOMParser().parseFromString(html,'text/html'); var incoming=doc.querySelectorAll('#imdeksResults .imdeks-result-item'); incoming.forEach(function(item){ var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results; container.appendChild(document.importNode(item, true)); }); var nextBtn=doc.querySelector('#imdeksLoadMore'); var nextUrl=nextBtn ? nextBtn.getAttribute('data-next-url') : ''; if(loadBtn) loadBtn.setAttribute('data-next-url', nextUrl || ''); var nextPagination=doc.querySelector('#imdeksPagination'); if(nextPagination && pagination) pagination.innerHTML=nextPagination.innerHTML; if(!incoming.length && loadBtn){ loadBtn.style.display='none'; } }).catch(function(){ if(loadBtn) loadBtn.textContent='Tekrar dene'; }).finally(function(){ loading=false; if(loadBtn){ loadBtn.disabled=false; loadBtn.textContent='Daha fazla sonuç yükle'; } }); }
     if(loadBtn){ loadBtn.addEventListener('click', function(e){ e.preventDefault(); appendFromUrl(loadBtn.getAttribute('data-next-url')); }); window.addEventListener('scroll', function(){ if(autoLoads >= 2 || loading || !loadBtn || !loadBtn.getAttribute('data-next-url')) return; if((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 900){ autoLoads++; appendFromUrl(loadBtn.getAttribute('data-next-url')); } }, {passive:true}); }
 
     // Arama kutusu otomatik öneri.

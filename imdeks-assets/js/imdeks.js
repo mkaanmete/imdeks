@@ -17,50 +17,7 @@
     // Aynı sorguda aşağı indikçe otomatik yeni sonuç yükleme.
     var loadBtn = document.getElementById('imdeksLoadMore'), results = document.getElementById('imdeksResults'), pagination = document.getElementById('imdeksPagination');
     var loading = false, autoLoads = 0;
-    function appendFromUrl(url){ if(!url || loading || !results) return; loading=true; if(loadBtn){ loadBtn.disabled=true; loadBtn.textContent='Yükleniyor...'; } function fetchWithTimeout(url, timeout = 6000) {
-    return Promise.race([
-        fetch(url, {headers:{'X-Requested-With':'fetch'}}),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("timeout")), timeout)
-        )
-    ]);
-}
-
-fetchWithTimeout(url, 6000)
-    .then(function(r){ return r.text(); })
-    .then(function(html){
-
-        if (!html || html.length < 50) {
-            throw new Error("empty response");
-        }
-
-        var doc = new DOMParser().parseFromString(html,'text/html');
-
-        var incoming = doc.querySelectorAll('#imdeksResults .imdeks-result-item');
-
-        if (!incoming.length) {
-            throw new Error("no results");
-        }
-
-        incoming.forEach(function(item){
-            var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results;
-            container.appendChild(document.importNode(item, true));
-        });
-
-    })
-    .catch(function(err){
-        console.error(err);
-
-        if(loadBtn){
-            loadBtn.textContent = "Sunucu yavaş yanıt veriyor";
-        }
-
-        // loader kilitlenmesin
-        var asyncBox = document.getElementById('imdeksAsyncContent');
-        if (asyncBox) {
-            asyncBox.innerHTML = "<div style='padding:20px'>Sonuçlar yüklenemedi. Lütfen tekrar deneyin.</div>";
-        }
-    }).then(function(r){ return r.text(); }).then(function(html){ var doc=new DOMParser().parseFromString(html,'text/html'); var incoming=doc.querySelectorAll('#imdeksResults .imdeks-result-item'); incoming.forEach(function(item){ var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results; container.appendChild(document.importNode(item, true)); }); var nextBtn=doc.querySelector('#imdeksLoadMore'); var nextUrl=nextBtn ? nextBtn.getAttribute('data-next-url') : ''; if(loadBtn) loadBtn.setAttribute('data-next-url', nextUrl || ''); var nextPagination=doc.querySelector('#imdeksPagination'); if(nextPagination && pagination) pagination.innerHTML=nextPagination.innerHTML; if(!incoming.length && loadBtn){ loadBtn.style.display='none'; } }).catch(function(){ if(loadBtn) loadBtn.textContent='Tekrar dene'; }).finally(function(){ loading=false; if(loadBtn){ loadBtn.disabled=false; loadBtn.textContent='Daha fazla sonuç yükle'; } }); }
+    function appendFromUrl(url){ if(!url || loading || !results) return; loading=true; if(loadBtn){ loadBtn.disabled=true; loadBtn.textContent='Yükleniyor...'; } fetch(url, {headers:{'X-Requested-With':'fetch'}}).then(function(r){ return r.text(); }).then(function(html){ var doc=new DOMParser().parseFromString(html,'text/html'); var incoming=doc.querySelectorAll('#imdeksResults .imdeks-result-item'); incoming.forEach(function(item){ var container = results.querySelector('.serper-results, .serper-image-results, .serper-video-results') || results; container.appendChild(document.importNode(item, true)); }); var nextBtn=doc.querySelector('#imdeksLoadMore'); var nextUrl=nextBtn ? nextBtn.getAttribute('data-next-url') : ''; if(loadBtn) loadBtn.setAttribute('data-next-url', nextUrl || ''); var nextPagination=doc.querySelector('#imdeksPagination'); if(nextPagination && pagination) pagination.innerHTML=nextPagination.innerHTML; if(!incoming.length && loadBtn){ loadBtn.style.display='none'; } }).catch(function(){ if(loadBtn) loadBtn.textContent='Tekrar dene'; }).finally(function(){ loading=false; if(loadBtn){ loadBtn.disabled=false; loadBtn.textContent='Daha fazla sonuç yükle'; } }); }
     if(loadBtn){ loadBtn.addEventListener('click', function(e){ e.preventDefault(); appendFromUrl(loadBtn.getAttribute('data-next-url')); }); window.addEventListener('scroll', function(){ if(autoLoads >= 2 || loading || !loadBtn || !loadBtn.getAttribute('data-next-url')) return; if((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 900){ autoLoads++; appendFromUrl(loadBtn.getAttribute('data-next-url')); } }, {passive:true}); }
 
     // Arama kutusu otomatik öneri.
@@ -211,103 +168,86 @@ fetchWithTimeout(url, 6000)
 })();
 
 
-/* v95: async initial search content loader */
-
+/* v97: async initial search content loader - stable, timeout + AJAX navigation safe */
 (function(){
-    if (window.__imdeksAsyncInitialV95) return;
-    window.__imdeksAsyncInitialV95 = true;
     function absUrl(url){ try { return new URL(url, window.location.href).toString(); } catch(e){ return url; } }
-    function loadInitialAsyncContent(){
-        var box = document.getElementById('imdeksAsyncContent');
-        if (!box || !box.getAttribute('data-async-url') || box.dataset.loading === '1') return;
+    function fetchTextWithTimeout(url, timeout){
+        timeout = timeout || 15000;
+        if (window.AbortController) {
+            var controller = new AbortController();
+            var timer = setTimeout(function(){ controller.abort(); }, timeout);
+            return fetch(url, {
+                method:'GET', credentials:'same-origin', cache:'no-store', signal: controller.signal,
+                headers:{'X-Requested-With':'fetch','Accept':'text/html, */*;q=0.8'}
+            }).then(function(res){ clearTimeout(timer); return res.text(); }, function(err){ clearTimeout(timer); throw err; });
+        }
+        return Promise.race([
+            fetch(url, {method:'GET', credentials:'same-origin', cache:'no-store', headers:{'X-Requested-With':'fetch','Accept':'text/html, */*;q=0.8'}}).then(function(res){ return res.text(); }),
+            new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, timeout); })
+        ]);
+    }
+    function showAsyncError(box, message){
+        if (!box) return;
+        box.dataset.loading = '0';
+        box.innerHTML = '<div class="alert alert-warning my-3"><strong>Arama sonuçları yüklenemedi.</strong><br>' + (message || 'Sunucu yavaş yanıt verdi. Lütfen tekrar deneyin.') + '<br><button type="button" class="imdeks-load-more imdeks-async-retry" style="margin-top:10px;">Tekrar dene</button></div>';
+    }
+    function loadInitialAsyncContent(root){
+        root = root || document;
+        var box = root.querySelector ? root.querySelector('#imdeksAsyncContent[data-async-url]') : document.getElementById('imdeksAsyncContent');
+        if (!box || !box.getAttribute('data-async-url')) return;
+        if (box.dataset.loading === '1' || box.dataset.loaded === '1') return;
         box.dataset.loading = '1';
-        fetch(absUrl(box.getAttribute('data-async-url')), {
-            method:'GET',
-            credentials:'same-origin',
-            cache:'no-store',
-            headers:{'X-Requested-With':'fetch','Accept':'text/html, */*;q=0.8'}
-        })
-        .then(function(res){ return res.text(); })
+        var slowTimer = setTimeout(function(){
+            var head = box.querySelector('.imdeks-async-loader-head span:last-child');
+            if (head && box.dataset.loaded !== '1') head.textContent = 'Sunucu yanıtı bekleniyor...';
+        }, 3500);
+        fetchTextWithTimeout(absUrl(box.getAttribute('data-async-url')), 15000)
         .then(function(html){
+            clearTimeout(slowTimer);
+            if (!html || html.length < 80) throw new Error('empty_response');
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var incoming = doc.getElementById('imdeksAsyncContent');
-            if (incoming) box.replaceWith(document.importNode(incoming, true));
+            var incomingResults = doc.getElementById('imdeksResults');
+            if (!incoming || !incomingResults) throw new Error('missing_results');
+            if (incoming.getAttribute('data-async-url')) throw new Error('recursive_async_response');
+            box.dataset.loaded = '1';
+            box.replaceWith(document.importNode(incoming, true));
             var currentSidebar = document.querySelector('.imdeks-sidebar');
             var incomingSidebar = doc.querySelector('.imdeks-sidebar');
             if (currentSidebar && incomingSidebar) currentSidebar.innerHTML = incomingSidebar.innerHTML;
         })
-        .catch(function(){
-            box.innerHTML = '<div class="alert alert-warning my-3">Arama sonuçları şu anda yüklenemedi. Lütfen sayfayı yenileyin.</div>';
+        .catch(function(err){
+            clearTimeout(slowTimer);
+            showAsyncError(box, err && err.name === 'AbortError' ? 'İstek zaman aşımına uğradı.' : 'Lütfen tekrar deneyin.');
         });
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadInitialAsyncContent);
-    else loadInitialAsyncContent();
-})();
-// === IMDEKS AJAX SEARCH FIX START ===
-
-let imdeksLoading = false;
-
-function fetchWithTimeout(url, timeout = 5000) {
-    return Promise.race([
-        fetch(url),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("timeout")), timeout)
-        )
-    ]);
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    if (!document.querySelector("[data-imdeks-search-page]")) return;
-
-    var query = new URLSearchParams(window.location.search).get("q");
-    if (!query) return;
-
-    if (imdeksLoading) return;
-    imdeksLoading = true;
-
-    const loader = document.getElementById("imdeksAjaxLoader");
-    const container = document.getElementById("imdeksAjaxResults");
-
-    if (!loader || !container) return;
-
-    fetchWithTimeout("/search?q=" + encodeURIComponent(query) + "&ajax=1", 5000)
-        .then(r => r.json())
-        .then(data => {
-
-            loader.style.display = "none";
-            container.style.display = "block";
-            container.innerHTML = "";
-
-            if (data.ai && data.ai.text) {
-                container.innerHTML += `
-                    <div class="imdeks-ai-answer-box">
-                        <strong>Yapay Zeka Cevabı</strong>
-                        <p>${data.ai.text}</p>
-                    </div>
-                `;
+    window.imdeksLoadInitialAsyncContent = loadInitialAsyncContent;
+    document.addEventListener('click', function(e){
+        var retry = e.target && e.target.closest ? e.target.closest('.imdeks-async-retry') : null;
+        if (!retry) return;
+        var box = document.getElementById('imdeksAsyncContent');
+        if (!box) return;
+        e.preventDefault();
+        box.dataset.loading = '0';
+        loadInitialAsyncContent(document);
+    }, true);
+    function onReady(){ loadInitialAsyncContent(document); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', onReady);
+    else onReady();
+    if (window.MutationObserver) {
+        var observer = new MutationObserver(function(mutations){
+            for (var i=0; i<mutations.length; i++) {
+                for (var j=0; j<mutations[i].addedNodes.length; j++) {
+                    var node = mutations[i].addedNodes[j];
+                    if (node && node.nodeType === 1) {
+                        if ((node.id === 'imdeksAsyncContent' && node.getAttribute('data-async-url')) || (node.querySelector && node.querySelector('#imdeksAsyncContent[data-async-url]'))) {
+                            setTimeout(function(){ loadInitialAsyncContent(document); }, 0);
+                            return;
+                        }
+                    }
+                }
             }
-
-            if (data.results && data.results.length) {
-                data.results.forEach(item => {
-                    container.innerHTML += `
-                        <div class="serper-result-item">
-                            <a href="${item.link}" target="_blank">${item.title}</a>
-                            <p>${item.snippet || ""}</p>
-                        </div>
-                    `;
-                });
-            } else {
-                container.innerHTML += `<p>Sonuç bulunamadı</p>`;
-            }
-
-        })
-        .catch(err => {
-            console.error(err);
-            loader.innerHTML = "Sunucu yanıt vermedi. Tekrar deneyin.";
-        })
-        .finally(() => {
-            imdeksLoading = false;
         });
-});
-
-// === IMDEKS AJAX SEARCH FIX END ===
+        observer.observe(document.documentElement || document.body, {childList:true, subtree:true});
+    }
+})();

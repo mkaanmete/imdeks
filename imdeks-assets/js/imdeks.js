@@ -200,3 +200,71 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadInitialAsyncContent);
     else loadInitialAsyncContent();
 })();
+// === IMDEKS AJAX SEARCH FIX START ===
+
+let imdeksLoading = false;
+
+function fetchWithTimeout(url, timeout = 5000) {
+    return Promise.race([
+        fetch(url),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("timeout")), timeout)
+        )
+    ]);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (!document.querySelector("[data-imdeks-search-page]")) return;
+
+    var query = new URLSearchParams(window.location.search).get("q");
+    if (!query) return;
+
+    if (imdeksLoading) return;
+    imdeksLoading = true;
+
+    const loader = document.getElementById("imdeksAjaxLoader");
+    const container = document.getElementById("imdeksAjaxResults");
+
+    if (!loader || !container) return;
+
+    fetchWithTimeout("/search?q=" + encodeURIComponent(query) + "&ajax=1", 5000)
+        .then(r => r.json())
+        .then(data => {
+
+            loader.style.display = "none";
+            container.style.display = "block";
+            container.innerHTML = "";
+
+            if (data.ai && data.ai.text) {
+                container.innerHTML += `
+                    <div class="imdeks-ai-answer-box">
+                        <strong>Yapay Zeka Cevabı</strong>
+                        <p>${data.ai.text}</p>
+                    </div>
+                `;
+            }
+
+            if (data.results && data.results.length) {
+                data.results.forEach(item => {
+                    container.innerHTML += `
+                        <div class="serper-result-item">
+                            <a href="${item.link}" target="_blank">${item.title}</a>
+                            <p>${item.snippet || ""}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML += `<p>Sonuç bulunamadı</p>`;
+            }
+
+        })
+        .catch(err => {
+            console.error(err);
+            loader.innerHTML = "Sunucu yanıt vermedi. Tekrar deneyin.";
+        })
+        .finally(() => {
+            imdeksLoading = false;
+        });
+});
+
+// === IMDEKS AJAX SEARCH FIX END ===

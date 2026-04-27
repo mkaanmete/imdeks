@@ -166,3 +166,37 @@
 
 
 })();
+
+
+/* v95: async initial search content loader */
+
+(function(){
+    if (window.__imdeksAsyncInitialV95) return;
+    window.__imdeksAsyncInitialV95 = true;
+    function absUrl(url){ try { return new URL(url, window.location.href).toString(); } catch(e){ return url; } }
+    function loadInitialAsyncContent(){
+        var box = document.getElementById('imdeksAsyncContent');
+        if (!box || !box.getAttribute('data-async-url') || box.dataset.loading === '1') return;
+        box.dataset.loading = '1';
+        fetch(absUrl(box.getAttribute('data-async-url')), {
+            method:'GET',
+            credentials:'same-origin',
+            cache:'no-store',
+            headers:{'X-Requested-With':'fetch','Accept':'text/html, */*;q=0.8'}
+        })
+        .then(function(res){ return res.text(); })
+        .then(function(html){
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var incoming = doc.getElementById('imdeksAsyncContent');
+            if (incoming) box.replaceWith(document.importNode(incoming, true));
+            var currentSidebar = document.querySelector('.imdeks-sidebar');
+            var incomingSidebar = doc.querySelector('.imdeks-sidebar');
+            if (currentSidebar && incomingSidebar) currentSidebar.innerHTML = incomingSidebar.innerHTML;
+        })
+        .catch(function(){
+            box.innerHTML = '<div class="alert alert-warning my-3">Arama sonuçları şu anda yüklenemedi. Lütfen sayfayı yenileyin.</div>';
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadInitialAsyncContent);
+    else loadInitialAsyncContent();
+})();
